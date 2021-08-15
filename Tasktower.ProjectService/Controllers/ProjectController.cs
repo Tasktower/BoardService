@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tasktower.Lib.Aspnetcore.Paging;
-using Tasktower.Lib.Aspnetcore.Security;
 using Tasktower.ProjectService.BusinessLogic;
 using Tasktower.ProjectService.Dtos;
+using Tasktower.ProjectService.Security;
 
 namespace Tasktower.ProjectService.Controllers
 {
@@ -36,7 +36,7 @@ namespace Tasktower.ProjectService.Controllers
             return await _projectsService.UpdateProject(id, projectSaveDto);
         }
         
-        [Authorize(Policy = Policies.Names.UpdateProjectsAny)]
+        [Authorize(Policy = AuthPolicyNames.UpdateProjectsAny)]
         [HttpPut("{id:guid}/any")]
         public async ValueTask<ProjectReadDto> UpdateProjectAny([FromRoute] Guid id,
             [FromBody] ProjectSaveDto projectSaveDto)
@@ -51,7 +51,7 @@ namespace Tasktower.ProjectService.Controllers
             return await _projectsService.DeleteProject(id);
         }
         
-        [Authorize(Policy = Policies.Names.DeleteProjectsAny)]
+        [Authorize(Policy = AuthPolicyNames.DeleteProjectsAny)]
         [HttpDelete("{id:guid}/any")]
         public async ValueTask<ProjectReadDto> DeleteProjectAny([FromRoute] Guid id)
         {
@@ -65,7 +65,7 @@ namespace Tasktower.ProjectService.Controllers
             return await _projectsService.FindProjectById(id);
         }
         
-        [Authorize(Policy = Policies.Names.ReadProjectsAny)]
+        [Authorize(Policy = AuthPolicyNames.ReadProjectsAny)]
         [HttpGet("{id:guid}/any")]
         public async ValueTask<ProjectSearchDto> GetByIdAny([FromRoute] Guid id)
         {
@@ -81,7 +81,7 @@ namespace Tasktower.ProjectService.Controllers
             return await _projectsService.FindProjects(pagination, search, ownerIds, pendingInvites, member);
         }
         
-        [Authorize(Policy = Policies.Names.ReadProjectsAny)]
+        [Authorize(Policy = AuthPolicyNames.ReadProjectsAny)]
         [HttpGet("any")]
         public async ValueTask<Page<ProjectSearchDto>> FindProjectsAny([FromQuery] Pagination pagination,
             [FromQuery] string search, [FromQuery] ICollection<string> ownerIds)

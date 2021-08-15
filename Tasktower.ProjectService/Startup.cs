@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Tasktower.Lib.Aspnetcore.Configuration.StartupExtensions;
 using Tasktower.ProjectService.Configuration.StartupExtensions;
+using Tasktower.ProjectService.Security;
 
 namespace Tasktower.ProjectService
 {
@@ -21,7 +22,7 @@ namespace Tasktower.ProjectService
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureErrors(Configuration);
-            services.ConfigureAuth(Configuration);
+            services.ConfigureAuth(Configuration, AuthPolicies.Get());
             services.ConfigureRabbitMq(Configuration);
             services.ConfigureHttpClient(Configuration);
             services.ConfigureHttpContext(Configuration);

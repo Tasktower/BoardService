@@ -30,14 +30,13 @@ namespace Tasktower.ProjectService.Tests.Security
         {
             const string userId = "123";
             const string name = "John Stewart";
-            var permissions = new HashSet<string>() {Permissions.ReadProjectsAny, Permissions.UpdateProjectsAny};
+            var permissions = new HashSet<string>() {SecurityGroups.TasktowerAdmin};
             _userContextAccessorService.SignInForTesting(userId, name, permissions);
             Assert.True(_userContextAccessorService.UserContext.IsAuthenticated);
             Assert.Equal(userId, _userContextAccessorService.UserContext.UserId);
             Assert.Equal(name, _userContextAccessorService.UserContext.Name);
             Assert.Collection(_userContextAccessorService.UserContext.Permissions, 
-                p => Assert.Equal(p, Permissions.ReadProjectsAny),
-                p => Assert.Equal(p, Permissions.UpdateProjectsAny));
+                p => Assert.Equal(p, SecurityGroups.TasktowerAdmin));
         }
         
         [Fact]
@@ -59,8 +58,7 @@ namespace Tasktower.ProjectService.Tests.Security
                     {
                         new(ClaimTypes.NameIdentifier, userId),
                         new(ClaimTypes.Name, name),
-                        new(UserContextAccessorService.PermissionsClaim, Permissions.ReadProjectsAny),
-                        new(UserContextAccessorService.PermissionsClaim, Permissions.UpdateProjectsAny)
+                        new(UserContextAccessorService.PermissionsClaim, SecurityGroups.TasktowerAdmin),
                     },
                     "Basic")
             );
@@ -77,8 +75,7 @@ namespace Tasktower.ProjectService.Tests.Security
             Assert.Equal(userId, testUserContext.UserContext.UserId);
             Assert.Equal(name, testUserContext.UserContext.Name);
             Assert.Collection(testUserContext.UserContext.Permissions, 
-                p => Assert.Equal(p, Permissions.ReadProjectsAny),
-                p => Assert.Equal(p, Permissions.UpdateProjectsAny));
+                p => Assert.Equal(p, SecurityGroups.TasktowerAdmin));
         }
 
         [Fact]

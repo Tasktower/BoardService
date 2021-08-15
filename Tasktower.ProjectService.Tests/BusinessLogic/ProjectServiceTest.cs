@@ -23,8 +23,7 @@ namespace Tasktower.ProjectService.Tests.BusinessLogic
         // Owner 1 Data
         private const string User1Id = "10001";
         private const string User1UserName = "JohnStewart";
-        private readonly HashSet<string> _user1Permissions = new() 
-            {Permissions.DeleteProjectsAny, Permissions.ReadProjectsAny, Permissions.UpdateProjectsAny};
+        private readonly HashSet<string> _user1Permissions = new() {SecurityGroups.TasktowerAdmin};
         
         private readonly Guid _project1AId = Guid.Parse("0eca324e-a333-4e68-9b0a-ebeef00b60ec");
         private const string Project1ATitle = "Project 1A";
@@ -37,7 +36,7 @@ namespace Tasktower.ProjectService.Tests.BusinessLogic
         // Owner 2 Data
         private const string User2Id = "10002";
         private const string User2UserName = "SteveRodgers";
-        private readonly HashSet<string> _user2Permissions = new() {Permissions.ReadProjectsAny};
+        private readonly HashSet<string> _user2Permissions = new() {SecurityGroups.TasktowerAdmin};
         
         private readonly Guid _project2AId = Guid.Parse("2fceb781-c31c-4f47-9689-3916ad0bcbe8");
         private const string Project2ATitle = "Project 2A";
