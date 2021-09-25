@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tasktower.ProjectService.DataAccess.Context;
+using Tasktower.ProjectService.DataAccess.Entities;
 using Tasktower.ProjectService.DataAccess.Repositories;
+using Tasktower.ProjectService.Tools.Constants;
 
 namespace Tasktower.ProjectService.Configuration.StartupExtensions
 {
@@ -30,13 +33,109 @@ namespace Tasktower.ProjectService.Configuration.StartupExtensions
         
         public static void UpdateDatabase(this IApplicationBuilder app, IConfiguration configuration)
         {
-        if (!configuration.GetValue("Migration:Migrate", false)) return;
-        using var serviceScope = app.ApplicationServices
-            .GetRequiredService<IServiceScopeFactory>()
-            .CreateScope();
-        using var context = serviceScope.ServiceProvider.GetService<BoardDBContext>();
-        context?.Database.Migrate();
-        // Todo: setup test data
+            if (!configuration.GetValue("Migration:Migrate", false)) return;
+            using var serviceScope = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>()
+                .CreateScope();
+            using var context = serviceScope.ServiceProvider.GetService<BoardDBContext>();
+            context?.Database.MigrateAsync().Wait();
+            // Todo: setup test data
+            if (configuration.GetValue("Migration:SetupTestData", false))
+            {
+                var unitOfWork = serviceScope.ServiceProvider.GetService<IUnitOfWork>();
+                SetupTestData(unitOfWork);
+            }
+        }
+        
+        // ---------------------------------------- Test data startup ---------------------------------
+        
+        private static void SetupTestData(IUnitOfWork unitOfWork) {
+            // Clear data
+            unitOfWork.TaskRepository.DeleteAll();
+            unitOfWork.TaskBoardRepository.DeleteAll();
+            unitOfWork.ProjectRoleRepository.DeleteAll();
+            unitOfWork.ProjectRepository.DeleteAll();
+            unitOfWork.UserRepository.DeleteAll();
+            
+            // --------------------- Add data -------------------------------
+            
+            // User 1
+            var user1 = new UserEntity()
+            {
+                UserId = "auth0|60d43ad7d0b60f006878326f",
+                UserName = "adminuser",
+                Picture =
+                    "https://s.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fad.png"
+            };
+            user1.UpdateAuditProperties("SYSTEM", true);
+            unitOfWork.UserRepository.Insert(user1).Wait();
+
+            // Project 1
+            var project1 = new ProjectEntity()
+            {
+                Title = "Admin Project",
+                Description = "Test project for admin",
+                ProjectRoles = new List<ProjectRoleEntity>()
+                {
+                    new()
+                    {
+                        UserEntity = user1,
+                        Role = ProjectRoleValue.OWNER,
+                        PendingInvite = false,
+                    }
+                },
+                TaskBoards = new List<TaskBoardEntity>()
+                {
+                    new ()
+                    {
+                        Title = "My Board",
+                        Description = "A simple task board",
+                        Columns = new List<string>() {"To Do", "Doing", "Done"},
+                        Tasks = new List<TaskEntity>()
+                        {
+                            new ()
+                            {
+                                Name = "Turn off the stove",
+                                Summary = "Turn off the stove please",
+                                TaskDescriptionMarkup = "_Turn off the stove_",
+                                Column = "To Do"
+                            },
+                            new ()
+                            {
+                                Name = "Homework",
+                                Summary = "Do your homework",
+                                TaskDescriptionMarkup = "# Do your homework",
+                                Column = "Doing"
+                            },
+                            new ()
+                            {
+                                Name = "Groceries",
+                                Summary = "Buy food",
+                                TaskDescriptionMarkup = "# Get food",
+                                Column = "Done"
+                            },
+                        }
+                    }
+                }
+            };
+            project1.UpdateAuditProperties(user1.Id, true);
+            foreach (var role in project1.ProjectRoles)
+            {
+                role.UpdateAuditProperties(user1.Id, true);
+            }
+
+            foreach (var board in project1.TaskBoards)
+            {
+                board.UpdateAuditProperties(user1.Id, true);
+                foreach (var task in board.Tasks)
+                {
+                    task.UpdateAuditProperties(user1.Id, true);
+                }
+            }
+            unitOfWork.ProjectRepository.Insert(project1).Wait();
+            
+            // Save changes
+            unitOfWork.SaveChanges().Wait();
         }
     }
 }

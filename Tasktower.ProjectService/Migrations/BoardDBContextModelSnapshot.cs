@@ -241,6 +241,14 @@ namespace Tasktower.ProjectService.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("name");
 
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasDefaultValue("")
+                        .HasColumnName("summary");
+
                     b.Property<Guid>("TaskBoardId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("task_board_id");

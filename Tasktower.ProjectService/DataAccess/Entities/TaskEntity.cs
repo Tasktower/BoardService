@@ -9,6 +9,8 @@ namespace Tasktower.ProjectService.DataAccess.Entities
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        
+        public string Summary { get; set; }
         public string TaskDescriptionMarkup { get; set; }
         
         public string Column { get; set; }
@@ -30,6 +32,12 @@ namespace Tasktower.ProjectService.DataAccess.Entities
                 .HasColumnName("name")
                 .HasMaxLength(100)
                 .IsRequired();
+            
+            entityTypeBuilder.Property(e => e.Summary)
+                .HasColumnName("summary")
+                .HasMaxLength(2000)
+                .IsRequired()
+                .HasDefaultValue("");
 
             entityTypeBuilder.Property(e => e.TaskDescriptionMarkup)
                 .HasColumnName("mk_description")

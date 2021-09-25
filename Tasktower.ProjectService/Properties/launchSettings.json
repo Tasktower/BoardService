@@ -35,6 +35,28 @@
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "http://localhost:8082"
+    },
+    "Local.Migrate": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Migration__Migrate": "true",
+        "Migration__SetupTestData": "false"
+      },
+      "dotnetRunMessages": "true",
+      "applicationUrl": "http://localhost:8082"
+    },
+    "Local.Migrate.Data": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Migration__Migrate": "true",
+        "Migration__SetupTestData": "true"
+      },
+      "dotnetRunMessages": "true",
+      "applicationUrl": "http://localhost:8082"
     }
   }
 }

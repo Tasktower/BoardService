@@ -10,7 +10,7 @@ using Tasktower.ProjectService.DataAccess.Context;
 namespace Tasktower.ProjectService.Migrations
 {
     [DbContext(typeof(BoardDBContext))]
-    [Migration("20210925212811_InitialCreate")]
+    [Migration("20210925224827_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -242,6 +242,14 @@ namespace Tasktower.ProjectService.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("name");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasDefaultValue("")
+                        .HasColumnName("summary");
 
                     b.Property<Guid>("TaskBoardId")
                         .HasColumnType("uniqueidentifier")
