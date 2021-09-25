@@ -107,6 +107,7 @@ namespace Tasktower.ProjectService.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
                     name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    summary = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false, defaultValue: ""),
                     mk_description = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: ""),
                     column = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
                     task_board_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
