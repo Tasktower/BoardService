@@ -84,7 +84,11 @@ namespace Tasktower.ProjectService.Tests.BusinessLogic
             var user1Entity = new UserEntity()
             {
                 UserId = User1Id,
-                UserName = User1UserName
+                UserName = User1UserName,
+                CreatedAt = DateTime.Now,
+                CreatedBy = "Test",
+                ModifiedAt = DateTime.Now,
+                ModifiedBy = "Test"
             };
             var user1Projects = new[]
             {
@@ -93,14 +97,22 @@ namespace Tasktower.ProjectService.Tests.BusinessLogic
                     Id = _project1AId,
                     Title = Project1ATitle,
                     Description = Project1ADescription,
-                    ProjectRoles = new [] {NewProjectRole(user1Entity)}
+                    ProjectRoles = new [] {NewProjectRole(user1Entity)},
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = "Test",
+                    ModifiedAt = DateTime.Now,
+                    ModifiedBy = "Test"
                 },
                 new ProjectEntity
                 {
                     Id = _project1BId,
                     Title = Project1BTitle,
                     Description = Project1BDescription,
-                    ProjectRoles = new [] {NewProjectRole(user1Entity)}
+                    ProjectRoles = new [] {NewProjectRole(user1Entity)},
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = "Test",
+                    ModifiedAt = DateTime.Now,
+                    ModifiedBy = "Test"
                 }
             };
             await _unitOfWork.UserRepository.Insert(user1Entity);
@@ -109,7 +121,11 @@ namespace Tasktower.ProjectService.Tests.BusinessLogic
             var user2Entity = new UserEntity()
             {
                 UserId = User2Id,
-                UserName = User2UserName
+                UserName = User2UserName,
+                CreatedAt = DateTime.Now,
+                CreatedBy = "Test",
+                ModifiedAt = DateTime.Now,
+                ModifiedBy = "Test"
             };
             var user2Projects = new[]
             {
@@ -118,7 +134,11 @@ namespace Tasktower.ProjectService.Tests.BusinessLogic
                     Id = _project2AId,
                     Title = Project2ATitle,
                     Description = Project2ADescription,
-                    ProjectRoles = new[] {NewProjectRole(user2Entity)}
+                    ProjectRoles = new[] {NewProjectRole(user2Entity)},
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = "Test",
+                    ModifiedAt = DateTime.Now,
+                    ModifiedBy = "Test"
                 }
             };
             await _unitOfWork.ProjectRepository.InsertMany(user2Projects);
@@ -126,7 +146,11 @@ namespace Tasktower.ProjectService.Tests.BusinessLogic
             var user3Entity = new UserEntity()
             {
                 UserId = User3Id,
-                UserName = User3UserName
+                UserName = User3UserName,
+                CreatedAt = DateTime.Now,
+                CreatedBy = "Test",
+                ModifiedAt = DateTime.Now,
+                ModifiedBy = "Test"
             };
             await _unitOfWork.ProjectRepository.InsertMany(new[]
             {
@@ -135,20 +159,26 @@ namespace Tasktower.ProjectService.Tests.BusinessLogic
                     Id = _project3AId,
                     Title = Project3ATitle,
                     Description = Project3ADescription,
-                    ProjectRoles = new [] {NewProjectRole(user3Entity)}
+                    ProjectRoles = new [] {NewProjectRole(user3Entity)},
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = "Test",
+                    ModifiedAt = DateTime.Now,
+                    ModifiedBy = "Test"
                 },
                 new ProjectEntity
                 {
                     Id = _project3BId,
                     Title = Project3BTitle,
                     Description = Project3BDescription,
-                    ProjectRoles = new [] {NewProjectRole(user3Entity)}
+                    ProjectRoles = new [] {NewProjectRole(user3Entity)},
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = "Test",
+                    ModifiedAt = DateTime.Now,
+                    ModifiedBy = "Test"
                 }
             });
             // Save changes
             _unitOfWork.SaveChanges().Wait();
-            // Sign out user
-            _userContextAccessorService.SignOutForTesting();
         }
         
         private ProjectRoleEntity NewProjectRole(UserEntity userEntity)
