@@ -1,10 +1,8 @@
 ﻿using System;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
 using Tasktower.ProjectService.DataAccess.Context;
 using Tasktower.ProjectService.DataAccess.Repositories;
 
@@ -28,6 +26,17 @@ namespace Tasktower.ProjectService.Configuration.StartupExtensions
             services.AddScoped<ITaskBoardRepository, TaskBoardRepository>();
             services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+        }
+        
+        public static void UpdateDatabase(this IApplicationBuilder app, IConfiguration configuration)
+        {
+        if (!configuration.GetValue("Migration:Migrate", false)) return;
+        using var serviceScope = app.ApplicationServices
+            .GetRequiredService<IServiceScopeFactory>()
+            .CreateScope();
+        using var context = serviceScope.ServiceProvider.GetService<BoardDBContext>();
+        context?.Database.Migrate();
+        // Todo: setup test data
         }
     }
 }

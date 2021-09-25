@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +24,7 @@ namespace Tasktower.ProjectService
         {
             services.ConfigureErrors(Configuration);
             services.ConfigureAuth(Configuration, AuthPolicies.Get());
-            services.ConfigureRabbitMq(Configuration);
+            // services.ConfigureRabbitMq(Configuration);
             services.ConfigureHttpClient(Configuration);
             services.ConfigureHttpContext(Configuration);
             services.ConfigureDataMapper(Configuration);
@@ -47,6 +48,8 @@ namespace Tasktower.ProjectService
             {
                 app.ConfigureSwagger(env, Configuration);
             }
+
+            app.UpdateDatabase(Configuration);
 
             app.UseErrorsHandling(env);
 

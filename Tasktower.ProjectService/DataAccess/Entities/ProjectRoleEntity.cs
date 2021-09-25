@@ -61,7 +61,8 @@ namespace Tasktower.ProjectService.DataAccess.Entities
                 .OnDelete(DeleteBehavior.Cascade);
 
             entityTypeBuilder
-                .HasCheckConstraint("unique_project_roles", "UNIQUE ([project_id], [user_id])");
+                .HasIndex(e => new {e.ProjectId, e.UserId})
+                .IsUnique();
         }
 
     }

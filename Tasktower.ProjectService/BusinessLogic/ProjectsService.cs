@@ -47,9 +47,9 @@ namespace Tasktower.ProjectService.BusinessLogic
             var userEntity = await _unitOfWork.UserRepository.GetById(_userContextAccessorService.UserContext.UserId);
             if (userEntity == null)
             {
-                var extUserPublicReadDto = 
-                    await _externalUserService.GetUser(_userContextAccessorService.UserContext.UserId);
-                userEntity = _mapper.Map<UserEntity>(extUserPublicReadDto);
+                // var extUserPublicReadDto = 
+                //     await _externalUserService.GetUser(_userContextAccessorService.UserContext.UserId);
+                // userEntity = _mapper.Map<UserEntity>(extUserPublicReadDto);
             }
             var projectRoleEntity = new ProjectRoleEntity()
             {
@@ -58,6 +58,7 @@ namespace Tasktower.ProjectService.BusinessLogic
                 PendingInvite = false
             };
             projectEntity.ProjectRoles = new List<ProjectRoleEntity>() {projectRoleEntity};
+            projectEntity.UpdateAuditProperties(_userContextAccessorService.UserContext.UserId, true);
             await _unitOfWork.ProjectRepository.Insert(projectEntity);
             await _unitOfWork.SaveChanges();
             return _mapper.Map<ProjectEntity, ProjectReadDto>(projectEntity);
@@ -76,6 +77,7 @@ namespace Tasktower.ProjectService.BusinessLogic
             }
 
             var projectEntityToSave = _mapper.Map(projectSaveDto, oldProjectEntity);
+            projectEntityToSave.UpdateAuditProperties(_userContextAccessorService.UserContext.UserId, false);
             await _unitOfWork.ProjectRepository.Update(projectEntityToSave);
             await _unitOfWork.SaveChanges();
             return _mapper.Map<ProjectEntity, ProjectReadDto>(projectEntityToSave);
