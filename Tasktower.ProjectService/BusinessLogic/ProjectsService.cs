@@ -57,6 +57,7 @@ namespace Tasktower.ProjectService.BusinessLogic
                 Role = ProjectRoleValue.OWNER,
                 PendingInvite = false
             };
+            projectRoleEntity.UpdateAuditProperties(_userContextAccessorService.UserContext.UserId, true);
             projectEntity.ProjectRoles = new List<ProjectRoleEntity>() {projectRoleEntity};
             projectEntity.UpdateAuditProperties(_userContextAccessorService.UserContext.UserId, true);
             await _unitOfWork.ProjectRepository.Insert(projectEntity);

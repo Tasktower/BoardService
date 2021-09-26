@@ -30,7 +30,7 @@ namespace Tasktower.ProjectService.BusinessLogic
             if (existingUserEntity == null)
             {
                 userEntityToSave = _mapper.Map<UserEntity>(extUserSync.UserProfileToSync);
-                userEntityToSave.UpdateAuditProperties("SYSTEM", false);
+                userEntityToSave.UpdateAuditProperties("SYSTEM", true);
                 await _unitOfWork.UserRepository.Insert(userEntityToSave);
             }
             else

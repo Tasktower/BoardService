@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,13 +44,29 @@ namespace Tasktower.ProjectService.Configuration.StartupExtensions
                 .GetRequiredService<IServiceScopeFactory>()
                 .CreateScope();
             using var context = serviceScope.ServiceProvider.GetService<BoardDBContext>();
-            context?.Database.MigrateAsync().Wait();
+
+            // Attempt migration, if fail due to network connection retry again
+            foreach (var _ in Enumerable.Range(1, 50))
+            {
+                try
+                {
+                    context?.Database.MigrateAsync().Wait();
+                    break;
+                }
+                catch (Exception e)
+                {
+                    Task.Delay(1000);
+                    Console.WriteLine(e);
+                }
+            }
+            // Test data setup
             if (configuration.GetValue("Migration:SetupTestData", false))
             {
                 var unitOfWork = serviceScope.ServiceProvider.GetService<IUnitOfWork>();
                 
                 SetupTestData(unitOfWork).Wait();
             }
+            // Shutdown app if specified
             if (configuration.GetValue("Migration:Shutdown", false))
             {
                 var appLifetime = serviceScope.ServiceProvider.GetService<IHostApplicationLifetime>();
