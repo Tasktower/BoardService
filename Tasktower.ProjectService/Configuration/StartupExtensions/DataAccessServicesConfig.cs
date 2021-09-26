@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Tasktower.ProjectService.DataAccess.Context;
 using Tasktower.ProjectService.DataAccess.Entities;
 using Tasktower.ProjectService.DataAccess.Repositories;
@@ -13,7 +14,7 @@ namespace Tasktower.ProjectService.Configuration.StartupExtensions
 {
     public static class DataAccessServicesConfig
     {
-        public static void ConfigureDatabaseConnection(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<BoardDBContext>(options =>
             {
@@ -39,36 +40,40 @@ namespace Tasktower.ProjectService.Configuration.StartupExtensions
                 .CreateScope();
             using var context = serviceScope.ServiceProvider.GetService<BoardDBContext>();
             context?.Database.MigrateAsync().Wait();
-            // Todo: setup test data
             if (configuration.GetValue("Migration:SetupTestData", false))
             {
                 var unitOfWork = serviceScope.ServiceProvider.GetService<IUnitOfWork>();
-                SetupTestData(unitOfWork);
+                
+                SetupTestData(unitOfWork).Wait();
+            }
+            if (configuration.GetValue("Migration:Shutdown", false))
+            {
+                var appLifetime = serviceScope.ServiceProvider.GetService<IHostApplicationLifetime>();
+                appLifetime?.StopApplication();
             }
         }
         
         // ---------------------------------------- Test data startup ---------------------------------
         
-        private static void SetupTestData(IUnitOfWork unitOfWork) {
-            // Clear data
-            unitOfWork.TaskRepository.DeleteAll();
-            unitOfWork.TaskBoardRepository.DeleteAll();
-            unitOfWork.ProjectRoleRepository.DeleteAll();
-            unitOfWork.ProjectRepository.DeleteAll();
-            unitOfWork.UserRepository.DeleteAll();
+        private static async Task SetupTestData(IUnitOfWork unitOfWork) {
+            // ___Clear data___
+            await unitOfWork.TaskRepository.DeleteAll();
+            await unitOfWork.TaskBoardRepository.DeleteAll();
+            await unitOfWork.ProjectRoleRepository.DeleteAll();
+            await unitOfWork.ProjectRepository.DeleteAll();
+            await unitOfWork.UserRepository.DeleteAll();
             
-            // --------------------- Add data -------------------------------
+            // ___Add Data___
             
             // User 1
             var user1 = new UserEntity()
             {
                 UserId = "auth0|60d43ad7d0b60f006878326f",
                 UserName = "adminuser",
-                Picture =
-                    "https://s.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fad.png"
+                Picture = "https://s.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fad.png"
             };
             user1.UpdateAuditProperties("SYSTEM", true);
-            unitOfWork.UserRepository.Insert(user1).Wait();
+            await unitOfWork.UserRepository.Insert(user1);
 
             // Project 1
             var project1 = new ProjectEntity()
@@ -132,10 +137,10 @@ namespace Tasktower.ProjectService.Configuration.StartupExtensions
                     task.UpdateAuditProperties(user1.Id, true);
                 }
             }
-            unitOfWork.ProjectRepository.Insert(project1).Wait();
+            await unitOfWork.ProjectRepository.Insert(project1);
             
             // Save changes
-            unitOfWork.SaveChanges().Wait();
+            await unitOfWork.SaveChanges();
         }
     }
 }

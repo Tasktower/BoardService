@@ -42,7 +42,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "Migration__Migrate": "true",
-        "Migration__SetupTestData": "false"
+        "Migration__SetupTestData": "false",
+        "Migration__Shutdown": "true",
+        "RabbitMqEnable": "false"
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "http://localhost:8082"
@@ -53,7 +55,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "Migration__Migrate": "true",
-        "Migration__SetupTestData": "true"
+        "Migration__SetupTestData": "true",
+        "Migration__Shutdown": "true",
+        "RabbitMqEnable": "false"
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "http://localhost:8082"

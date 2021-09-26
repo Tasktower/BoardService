@@ -11,6 +11,7 @@ namespace Tasktower.ProjectService.Configuration.StartupExtensions
     {
         public static void ConfigureRabbitMq(this IServiceCollection services, IConfiguration configuration)
         {
+            if (!configuration.GetValue("RabbitMqEnable", false)) return;
             var rabbitMqClientConf = configuration.GetSection("RabbitMq");
             var dataUpdateExchangeConf = configuration.GetSection("RabbitMqExchanges:DataUpdate");
             

@@ -24,21 +24,23 @@ namespace Tasktower.ProjectService
         {
             services.ConfigureErrors(Configuration);
             services.ConfigureAuth(Configuration, AuthPolicies.Get());
-            // services.ConfigureRabbitMq(Configuration);
             services.ConfigureHttpClient(Configuration);
             services.ConfigureHttpContext(Configuration);
             services.ConfigureDataMapper(Configuration);
-            services.ConfigureDatabaseConnection(Configuration);
+            services.ConfigureDbContext(Configuration);
             services.ConfigureRepositories(Configuration);
             services.ConfigureBusinessLogicServices(Configuration);
             services.ConfigureOptionsServices(Configuration);
             services.ConfigureControllers(Configuration);
+            services.ConfigureRabbitMq(Configuration);
             services.ConfigureSwagger(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UpdateDatabase(Configuration);
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -48,8 +50,6 @@ namespace Tasktower.ProjectService
             {
                 app.ConfigureSwagger(env, Configuration);
             }
-
-            app.UpdateDatabase(Configuration);
 
             app.UseErrorsHandling(env);
 
